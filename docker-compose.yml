@@ -1,0 +1,25 @@
+# Fuseki only. Python runs on the host inside a uv-managed venv.
+#
+# Image: conceptkernel/jena-fuseki — explicit multi-arch (amd64 + arm64),
+# wraps Apache Jena Fuseki 6.0.0. Verified via `docker manifest inspect` to
+# expose linux/arm64. Default credentials are admin/pw (Shiro-managed —
+# change by mounting a custom shiro.ini if exposing beyond localhost).
+#
+# Dataset: TDB2-backed, persisted at fuseki_data/credit-risk/.
+
+services:
+  fuseki:
+    image: conceptkernel/jena-fuseki:6.0.0-1
+    platform: linux/arm64
+    container_name: credit_risk_fuseki
+    ports:
+      - "3030:3030"
+    environment:
+      JAVA_OPTIONS: -Xmx1500m -Xms256m
+    command:
+      - --update
+      - --tdb2
+      - --loc=/fuseki/databases/credit-risk
+      - /credit-risk
+    volumes:
+      - ./fuseki_data:/fuseki/databases

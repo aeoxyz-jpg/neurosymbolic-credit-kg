@@ -1,0 +1,256 @@
+## customers.ttl — A-Box: 20 applicants + supporting orgs
+##
+## Distribution by intended tier (after Pellet runs in Phase B):
+##   - 7 Prime    (FICO ≥ 740, DTI ≤ 0.36, employment ≥ 2)
+##   - 7 NearPrime (620 ≤ FICO < 740)
+##   - 6 Subprime (FICO < 620)
+##
+## All applicants are hand-crafted so that NB02 can predict exact tier counts.
+
+@prefix :     <https://nikko.dev/ontology/credit#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+##############################################################################
+# Supporting organizations
+##############################################################################
+
+:Bureau_Equifax a :CreditBureau ; rdfs:label "Equifax" .
+:Bureau_Experian a :CreditBureau ; rdfs:label "Experian" .
+:Bureau_TransUnion a :CreditBureau ; rdfs:label "TransUnion" .
+
+:Employer_Acme a :Employer ; rdfs:label "Acme Corp" .
+:Employer_Globex a :Employer ; rdfs:label "Globex Industries" .
+:Employer_InitechFreelance a :Employer ; rdfs:label "Initech (1099 contractor)" .
+:Employer_StartupX a :Employer ; rdfs:label "StartupX" .
+
+##############################################################################
+# Prime applicants (7) — expected to be classified as :PrimeApplicant
+##############################################################################
+
+:Applicant_P01 a :Applicant ;
+    rdfs:label "P01 — Senior Engineer, stable" ;
+    :hasCreditScore 810 ;
+    :hasAnnualIncome 185000.00 ;
+    :hasDebtToIncomeRatio 0.18 ;
+    :hasEmploymentYears 9 ;
+    :hasMonthsAtAddress 84 ;
+    :hasPriorDelinquencies 0 ;
+    :employedBy :Employer_Globex .
+
+:Applicant_P02 a :Applicant ;
+    rdfs:label "P02 — Physician, low DTI" ;
+    :hasCreditScore 795 ;
+    :hasAnnualIncome 320000.00 ;
+    :hasDebtToIncomeRatio 0.22 ;
+    :hasEmploymentYears 12 ;
+    :hasMonthsAtAddress 120 ;
+    :hasPriorDelinquencies 0 ;
+    :employedBy :Employer_Acme .
+
+:Applicant_P03 a :Applicant ;
+    rdfs:label "P03 — Tenured prof" ;
+    :hasCreditScore 768 ;
+    :hasAnnualIncome 145000.00 ;
+    :hasDebtToIncomeRatio 0.30 ;
+    :hasEmploymentYears 15 ;
+    :hasMonthsAtAddress 60 ;
+    :hasPriorDelinquencies 0 ;
+    :employedBy :Employer_Acme .
+
+:Applicant_P04 a :Applicant ;
+    rdfs:label "P04 — Borderline prime (FICO=740 exactly)" ;
+    :hasCreditScore 740 ;
+    :hasAnnualIncome 92000.00 ;
+    :hasDebtToIncomeRatio 0.36 ;
+    :hasEmploymentYears 2 ;
+    :hasMonthsAtAddress 30 ;
+    :hasPriorDelinquencies 0 ;
+    :employedBy :Employer_Globex .
+
+:Applicant_P05 a :Applicant ;
+    rdfs:label "P05 — Solid mid-career" ;
+    :hasCreditScore 776 ;
+    :hasAnnualIncome 110000.00 ;
+    :hasDebtToIncomeRatio 0.25 ;
+    :hasEmploymentYears 6 ;
+    :hasMonthsAtAddress 48 ;
+    :hasPriorDelinquencies 0 ;
+    :employedBy :Employer_Acme .
+
+:Applicant_P06 a :Applicant ;
+    rdfs:label "P06 — Long tenure modest income" ;
+    :hasCreditScore 752 ;
+    :hasAnnualIncome 78000.00 ;
+    :hasDebtToIncomeRatio 0.28 ;
+    :hasEmploymentYears 20 ;
+    :hasMonthsAtAddress 200 ;
+    :hasPriorDelinquencies 0 ;
+    :employedBy :Employer_Globex .
+
+:Applicant_P07 a :Applicant ;
+    rdfs:label "P07 — Prime, one old delinquency" ;
+    :hasCreditScore 760 ;
+    :hasAnnualIncome 130000.00 ;
+    :hasDebtToIncomeRatio 0.32 ;
+    :hasEmploymentYears 5 ;
+    :hasMonthsAtAddress 36 ;
+    :hasPriorDelinquencies 1 ;
+    :employedBy :Employer_Acme .
+
+##############################################################################
+# Near-Prime applicants (7) — expected :NearPrimeApplicant (620 ≤ FICO < 740)
+##############################################################################
+
+:Applicant_N01 a :Applicant ;
+    rdfs:label "N01 — Near-prime, high DTI" ;
+    :hasCreditScore 705 ;
+    :hasAnnualIncome 68000.00 ;
+    :hasDebtToIncomeRatio 0.42 ;
+    :hasEmploymentYears 3 ;
+    :hasMonthsAtAddress 24 ;
+    :hasPriorDelinquencies 1 ;
+    :employedBy :Employer_StartupX .
+
+:Applicant_N02 a :Applicant ;
+    rdfs:label "N02 — Recent grad, short tenure" ;
+    :hasCreditScore 720 ;
+    :hasAnnualIncome 72000.00 ;
+    :hasDebtToIncomeRatio 0.30 ;
+    :hasEmploymentYears 1 ;
+    :hasMonthsAtAddress 12 ;
+    :hasPriorDelinquencies 0 ;
+    :employedBy :Employer_StartupX .
+
+:Applicant_N03 a :Applicant ;
+    rdfs:label "N03 — Self-employed contractor" ;
+    :hasCreditScore 688 ;
+    :hasAnnualIncome 95000.00 ;
+    :hasDebtToIncomeRatio 0.38 ;
+    :hasEmploymentYears 4 ;
+    :hasMonthsAtAddress 18 ;
+    :hasPriorDelinquencies 2 ;
+    :employedBy :Employer_InitechFreelance .
+
+:Applicant_N04 a :Applicant ;
+    rdfs:label "N04 — Borderline (FICO=620 lower edge)" ;
+    :hasCreditScore 620 ;
+    :hasAnnualIncome 55000.00 ;
+    :hasDebtToIncomeRatio 0.41 ;
+    :hasEmploymentYears 2 ;
+    :hasMonthsAtAddress 14 ;
+    :hasPriorDelinquencies 2 ;
+    :employedBy :Employer_StartupX .
+
+:Applicant_N05 a :Applicant ;
+    rdfs:label "N05 — Borderline (FICO=739 just under prime)" ;
+    :hasCreditScore 739 ;
+    :hasAnnualIncome 88000.00 ;
+    :hasDebtToIncomeRatio 0.34 ;
+    :hasEmploymentYears 3 ;
+    :hasMonthsAtAddress 48 ;
+    :hasPriorDelinquencies 0 ;
+    :employedBy :Employer_Globex .
+
+:Applicant_N06 a :Applicant ;
+    rdfs:label "N06 — Average profile" ;
+    :hasCreditScore 670 ;
+    :hasAnnualIncome 62000.00 ;
+    :hasDebtToIncomeRatio 0.39 ;
+    :hasEmploymentYears 5 ;
+    :hasMonthsAtAddress 60 ;
+    :hasPriorDelinquencies 1 ;
+    :employedBy :Employer_Acme .
+
+:Applicant_N07 a :Applicant ;
+    rdfs:label "N07 — Mid-tier with coapplicant" ;
+    :hasCreditScore 695 ;
+    :hasAnnualIncome 71000.00 ;
+    :hasDebtToIncomeRatio 0.36 ;
+    :hasEmploymentYears 4 ;
+    :hasMonthsAtAddress 72 ;
+    :hasPriorDelinquencies 0 ;
+    :employedBy :Employer_Globex .
+
+##############################################################################
+# Subprime applicants (6) — expected :SubprimeApplicant (FICO < 620)
+##############################################################################
+
+:Applicant_S01 a :Applicant ;
+    rdfs:label "S01 — Multiple delinquencies" ;
+    :hasCreditScore 580 ;
+    :hasAnnualIncome 42000.00 ;
+    :hasDebtToIncomeRatio 0.55 ;
+    :hasEmploymentYears 1 ;
+    :hasMonthsAtAddress 8 ;
+    :hasPriorDelinquencies 4 ;
+    :employedBy :Employer_StartupX .
+
+:Applicant_S02 a :Applicant ;
+    rdfs:label "S02 — Just under threshold (FICO=619)" ;
+    :hasCreditScore 619 ;
+    :hasAnnualIncome 48000.00 ;
+    :hasDebtToIncomeRatio 0.45 ;
+    :hasEmploymentYears 3 ;
+    :hasMonthsAtAddress 36 ;
+    :hasPriorDelinquencies 2 ;
+    :employedBy :Employer_Acme .
+
+:Applicant_S03 a :Applicant ;
+    rdfs:label "S03 — Thin file, irregular work" ;
+    :hasCreditScore 555 ;
+    :hasAnnualIncome 38000.00 ;
+    :hasDebtToIncomeRatio 0.50 ;
+    :hasEmploymentYears 0 ;
+    :hasMonthsAtAddress 6 ;
+    :hasPriorDelinquencies 3 ;
+    :employedBy :Employer_InitechFreelance .
+
+:Applicant_S04 a :Applicant ;
+    rdfs:label "S04 — Deep subprime" ;
+    :hasCreditScore 510 ;
+    :hasAnnualIncome 35000.00 ;
+    :hasDebtToIncomeRatio 0.62 ;
+    :hasEmploymentYears 2 ;
+    :hasMonthsAtAddress 24 ;
+    :hasPriorDelinquencies 5 ;
+    :employedBy :Employer_Globex .
+
+:Applicant_S05 a :Applicant ;
+    rdfs:label "S05 — Recovering profile" ;
+    :hasCreditScore 605 ;
+    :hasAnnualIncome 52000.00 ;
+    :hasDebtToIncomeRatio 0.44 ;
+    :hasEmploymentYears 4 ;
+    :hasMonthsAtAddress 36 ;
+    :hasPriorDelinquencies 2 ;
+    :employedBy :Employer_Acme .
+
+:Applicant_S06 a :Applicant ;
+    rdfs:label "S06 — Recent default" ;
+    :hasCreditScore 545 ;
+    :hasAnnualIncome 41000.00 ;
+    :hasDebtToIncomeRatio 0.58 ;
+    :hasEmploymentYears 6 ;
+    :hasMonthsAtAddress 12 ;
+    :hasPriorDelinquencies 3 ;
+    :employedBy :Employer_StartupX .
+
+##############################################################################
+# Coapplicants (a few, for use in applications.ttl)
+##############################################################################
+
+:Coapplicant_C01 a :Coapplicant ;
+    rdfs:label "C01 — Spouse, stable income" ;
+    :hasCreditScore 745 ;
+    :hasAnnualIncome 75000.00 ;
+    :hasDebtToIncomeRatio 0.28 ;
+    :hasEmploymentYears 8 .
+
+:Coapplicant_C02 a :Coapplicant ;
+    rdfs:label "C02 — Sibling, thinner file" ;
+    :hasCreditScore 660 ;
+    :hasAnnualIncome 52000.00 ;
+    :hasDebtToIncomeRatio 0.40 ;
+    :hasEmploymentYears 3 .

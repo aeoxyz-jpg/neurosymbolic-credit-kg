@@ -1,0 +1,410 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xml:base="https://nikko.dev/ontology/credit/rules"
+         xmlns="https://nikko.dev/ontology/credit/rules#"
+         xmlns:swrl="http://www.w3.org/2003/11/swrl#">
+
+<owl:Ontology rdf:about="https://nikko.dev/ontology/credit/rules">
+  <owl:imports rdf:resource="https://nikko.dev/ontology/credit"/>
+</owl:Ontology>
+
+<swrl:Variable rdf:about="urn:swrl#app"/>
+
+<swrl:Variable rdf:about="urn:swrl#a"/>
+
+<swrl:Variable rdf:about="urn:swrl#s"/>
+
+<swrl:Variable rdf:about="urn:swrl#v"/>
+
+<swrl:Variable rdf:about="urn:swrl#es"/>
+
+<swrl:Variable rdf:about="urn:swrl#ev"/>
+
+<swrl:Variable rdf:about="urn:swrl#amt"/>
+
+<swrl:Imp>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="https://nikko.dev/ontology/credit#CreditApplication"/>
+          <swrl:argument1 rdf:resource="urn:swrl#app"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:IndividualPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="https://nikko.dev/ontology/credit#hasRiskTier"/>
+              <swrl:argument1 rdf:resource="urn:swrl#app"/>
+              <swrl:argument2 rdf:resource="https://nikko.dev/ontology/credit#LowRiskApplication"/>
+            </swrl:IndividualPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:IndividualPropertyAtom>
+                  <swrl:propertyPredicate rdf:resource="https://nikko.dev/ontology/credit#emittedSignal"/>
+                  <swrl:argument1 rdf:resource="urn:swrl#app"/>
+                  <swrl:argument2 rdf:resource="urn:swrl#es"/>
+                </swrl:IndividualPropertyAtom>
+              </rdf:first>
+              <rdf:rest>
+                <rdf:Description>
+                  <rdf:first>
+                    <swrl:ClassAtom>
+                      <swrl:classPredicate rdf:resource="https://nikko.dev/ontology/credit#EmploymentStabilitySignal"/>
+                      <swrl:argument1 rdf:resource="urn:swrl#es"/>
+                    </swrl:ClassAtom>
+                  </rdf:first>
+                  <rdf:rest>
+                    <rdf:Description>
+                      <rdf:first>
+                        <swrl:DatavaluedPropertyAtom>
+                          <swrl:propertyPredicate rdf:resource="https://nikko.dev/ontology/credit#signalValue"/>
+                          <swrl:argument1 rdf:resource="urn:swrl#es"/>
+                          <swrl:argument2 rdf:resource="urn:swrl#ev"/>
+                        </swrl:DatavaluedPropertyAtom>
+                      </rdf:first>
+                      <rdf:rest>
+                        <rdf:Description>
+                          <rdf:first>
+                            <swrl:BuiltinAtom>
+                              <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#greaterThanOrEqual"/>
+                              <swrl:arguments>
+                                <rdf:Description>
+                                  <rdf:first rdf:resource="urn:swrl#ev"/>
+                                  <rdf:rest>
+                                    <rdf:Description>
+                                      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                      <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.7</rdf:first>
+                                    </rdf:Description>
+                                  </rdf:rest>
+                                </rdf:Description>
+                              </swrl:arguments>
+                            </swrl:BuiltinAtom>
+                          </rdf:first>
+                          <rdf:rest>
+                            <rdf:Description>
+                              <rdf:first>
+                                <swrl:DatavaluedPropertyAtom>
+                                  <swrl:propertyPredicate rdf:resource="https://nikko.dev/ontology/credit#requestedAmount"/>
+                                  <swrl:argument1 rdf:resource="urn:swrl#app"/>
+                                  <swrl:argument2 rdf:resource="urn:swrl#amt"/>
+                                </swrl:DatavaluedPropertyAtom>
+                              </rdf:first>
+                              <rdf:rest>
+                                <rdf:Description>
+                                  <rdf:first>
+                                    <swrl:BuiltinAtom>
+                                      <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#lessThanOrEqual"/>
+                                      <swrl:arguments>
+                                        <rdf:Description>
+                                          <rdf:first rdf:resource="urn:swrl#amt"/>
+                                          <rdf:rest>
+                                            <rdf:Description>
+                                              <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                              <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100000</rdf:first>
+                                            </rdf:Description>
+                                          </rdf:rest>
+                                        </rdf:Description>
+                                      </swrl:arguments>
+                                    </swrl:BuiltinAtom>
+                                  </rdf:first>
+                                  <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                </rdf:Description>
+                              </rdf:rest>
+                            </rdf:Description>
+                          </rdf:rest>
+                        </rdf:Description>
+                      </rdf:rest>
+                    </rdf:Description>
+                  </rdf:rest>
+                </rdf:Description>
+              </rdf:rest>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="https://nikko.dev/ontology/credit#hasDecision"/>
+          <swrl:argument1 rdf:resource="urn:swrl#app"/>
+          <swrl:argument2 rdf:resource="https://nikko.dev/ontology/credit#Approve"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+</swrl:Imp>
+
+<swrl:Imp>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="https://nikko.dev/ontology/credit#CreditApplication"/>
+          <swrl:argument1 rdf:resource="urn:swrl#app"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:IndividualPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="https://nikko.dev/ontology/credit#hasRiskTier"/>
+              <swrl:argument1 rdf:resource="urn:swrl#app"/>
+              <swrl:argument2 rdf:resource="https://nikko.dev/ontology/credit#HighRiskApplication"/>
+            </swrl:IndividualPropertyAtom>
+          </rdf:first>
+          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="https://nikko.dev/ontology/credit#hasDecision"/>
+          <swrl:argument1 rdf:resource="urn:swrl#app"/>
+          <swrl:argument2 rdf:resource="https://nikko.dev/ontology/credit#Decline"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+</swrl:Imp>
+
+<swrl:Imp>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="https://nikko.dev/ontology/credit#CreditApplication"/>
+          <swrl:argument1 rdf:resource="urn:swrl#app"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:IndividualPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="https://nikko.dev/ontology/credit#emittedSignal"/>
+              <swrl:argument1 rdf:resource="urn:swrl#app"/>
+              <swrl:argument2 rdf:resource="urn:swrl#s"/>
+            </swrl:IndividualPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:ClassAtom>
+                  <swrl:classPredicate rdf:resource="https://nikko.dev/ontology/credit#CreditScoreSignal"/>
+                  <swrl:argument1 rdf:resource="urn:swrl#s"/>
+                </swrl:ClassAtom>
+              </rdf:first>
+              <rdf:rest>
+                <rdf:Description>
+                  <rdf:first>
+                    <swrl:DatavaluedPropertyAtom>
+                      <swrl:propertyPredicate rdf:resource="https://nikko.dev/ontology/credit#signalValue"/>
+                      <swrl:argument1 rdf:resource="urn:swrl#s"/>
+                      <swrl:argument2 rdf:resource="urn:swrl#v"/>
+                    </swrl:DatavaluedPropertyAtom>
+                  </rdf:first>
+                  <rdf:rest>
+                    <rdf:Description>
+                      <rdf:first>
+                        <swrl:BuiltinAtom>
+                          <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#lessThan"/>
+                          <swrl:arguments>
+                            <rdf:Description>
+                              <rdf:first rdf:resource="urn:swrl#v"/>
+                              <rdf:rest>
+                                <rdf:Description>
+                                  <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                  <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.3</rdf:first>
+                                </rdf:Description>
+                              </rdf:rest>
+                            </rdf:Description>
+                          </swrl:arguments>
+                        </swrl:BuiltinAtom>
+                      </rdf:first>
+                      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    </rdf:Description>
+                  </rdf:rest>
+                </rdf:Description>
+              </rdf:rest>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="https://nikko.dev/ontology/credit#hasRiskTier"/>
+          <swrl:argument1 rdf:resource="urn:swrl#app"/>
+          <swrl:argument2 rdf:resource="https://nikko.dev/ontology/credit#HighRiskApplication"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+</swrl:Imp>
+
+<swrl:Imp>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="https://nikko.dev/ontology/credit#CreditApplication"/>
+          <swrl:argument1 rdf:resource="urn:swrl#app"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:IndividualPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="https://nikko.dev/ontology/credit#hasApplicant"/>
+              <swrl:argument1 rdf:resource="urn:swrl#app"/>
+              <swrl:argument2 rdf:resource="urn:swrl#a"/>
+            </swrl:IndividualPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:ClassAtom>
+                  <swrl:classPredicate rdf:resource="https://nikko.dev/ontology/credit#SubprimeApplicant"/>
+                  <swrl:argument1 rdf:resource="urn:swrl#a"/>
+                </swrl:ClassAtom>
+              </rdf:first>
+              <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="https://nikko.dev/ontology/credit#hasRiskTier"/>
+          <swrl:argument1 rdf:resource="urn:swrl#app"/>
+          <swrl:argument2 rdf:resource="https://nikko.dev/ontology/credit#HighRiskApplication"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+</swrl:Imp>
+
+<swrl:Imp>
+  <swrl:body>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:ClassAtom>
+          <swrl:classPredicate rdf:resource="https://nikko.dev/ontology/credit#CreditApplication"/>
+          <swrl:argument1 rdf:resource="urn:swrl#app"/>
+        </swrl:ClassAtom>
+      </rdf:first>
+      <rdf:rest>
+        <rdf:Description>
+          <rdf:first>
+            <swrl:IndividualPropertyAtom>
+              <swrl:propertyPredicate rdf:resource="https://nikko.dev/ontology/credit#hasApplicant"/>
+              <swrl:argument1 rdf:resource="urn:swrl#app"/>
+              <swrl:argument2 rdf:resource="urn:swrl#a"/>
+            </swrl:IndividualPropertyAtom>
+          </rdf:first>
+          <rdf:rest>
+            <rdf:Description>
+              <rdf:first>
+                <swrl:ClassAtom>
+                  <swrl:classPredicate rdf:resource="https://nikko.dev/ontology/credit#PrimeApplicant"/>
+                  <swrl:argument1 rdf:resource="urn:swrl#a"/>
+                </swrl:ClassAtom>
+              </rdf:first>
+              <rdf:rest>
+                <rdf:Description>
+                  <rdf:first>
+                    <swrl:IndividualPropertyAtom>
+                      <swrl:propertyPredicate rdf:resource="https://nikko.dev/ontology/credit#emittedSignal"/>
+                      <swrl:argument1 rdf:resource="urn:swrl#app"/>
+                      <swrl:argument2 rdf:resource="urn:swrl#s"/>
+                    </swrl:IndividualPropertyAtom>
+                  </rdf:first>
+                  <rdf:rest>
+                    <rdf:Description>
+                      <rdf:first>
+                        <swrl:ClassAtom>
+                          <swrl:classPredicate rdf:resource="https://nikko.dev/ontology/credit#CreditScoreSignal"/>
+                          <swrl:argument1 rdf:resource="urn:swrl#s"/>
+                        </swrl:ClassAtom>
+                      </rdf:first>
+                      <rdf:rest>
+                        <rdf:Description>
+                          <rdf:first>
+                            <swrl:DatavaluedPropertyAtom>
+                              <swrl:propertyPredicate rdf:resource="https://nikko.dev/ontology/credit#signalValue"/>
+                              <swrl:argument1 rdf:resource="urn:swrl#s"/>
+                              <swrl:argument2 rdf:resource="urn:swrl#v"/>
+                            </swrl:DatavaluedPropertyAtom>
+                          </rdf:first>
+                          <rdf:rest>
+                            <rdf:Description>
+                              <rdf:first>
+                                <swrl:BuiltinAtom>
+                                  <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#greaterThanOrEqual"/>
+                                  <swrl:arguments>
+                                    <rdf:Description>
+                                      <rdf:first rdf:resource="urn:swrl#v"/>
+                                      <rdf:rest>
+                                        <rdf:Description>
+                                          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.8</rdf:first>
+                                        </rdf:Description>
+                                      </rdf:rest>
+                                    </rdf:Description>
+                                  </swrl:arguments>
+                                </swrl:BuiltinAtom>
+                              </rdf:first>
+                              <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                            </rdf:Description>
+                          </rdf:rest>
+                        </rdf:Description>
+                      </rdf:rest>
+                    </rdf:Description>
+                  </rdf:rest>
+                </rdf:Description>
+              </rdf:rest>
+            </rdf:Description>
+          </rdf:rest>
+        </rdf:Description>
+      </rdf:rest>
+    </rdf:Description>
+  </swrl:body>
+  <swrl:head>
+    <rdf:Description>
+      <rdf:first>
+        <swrl:IndividualPropertyAtom>
+          <swrl:propertyPredicate rdf:resource="https://nikko.dev/ontology/credit#hasRiskTier"/>
+          <swrl:argument1 rdf:resource="urn:swrl#app"/>
+          <swrl:argument2 rdf:resource="https://nikko.dev/ontology/credit#LowRiskApplication"/>
+        </swrl:IndividualPropertyAtom>
+      </rdf:first>
+      <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    </rdf:Description>
+  </swrl:head>
+</swrl:Imp>
+
+
+</rdf:RDF>

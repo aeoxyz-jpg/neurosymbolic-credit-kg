@@ -1,0 +1,364 @@
+## applications.ttl — A-Box: 30 credit applications + emitted signals
+##
+## Each application emits at least one CreditScoreSignal; many also emit
+## an EmploymentStabilitySignal (needed by SWRL R4 in §6).
+##
+## Signal value convention (normalized 0-1, higher = lower risk):
+##   - CreditScoreSignal value ≈ (FICO - 300) / 550, clipped to [0, 1]
+##   - EmploymentStabilitySignal value ≈ min(employmentYears / 10, 1.0)
+##   - Other signals are illustrative; precise calibration is left to NB04
+##
+## Timestamps are all 2026-05 (within 90-day staleness window per SHACL §5.7).
+
+@prefix :     <https://nikko.dev/ontology/credit#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+##############################################################################
+# Mortgage applications (10)
+##############################################################################
+
+:App_M01 a :MortgageApplication ;
+    :hasApplicant :Applicant_P01 ;
+    :requestedAmount 450000.00 ; :requestedTermMonths 360 ;
+    :emittedSignal :Sig_M01_credit, :Sig_M01_emp .
+:Sig_M01_credit a :CreditScoreSignal ;
+    :signalValue 0.93 ; :signalConfidence 0.98 ;
+    :signalTimestamp "2026-05-01T10:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Equifax .
+:Sig_M01_emp a :EmploymentStabilitySignal ;
+    :signalValue 0.90 ; :signalConfidence 0.95 ;
+    :signalTimestamp "2026-05-01T10:00:00Z"^^xsd:dateTime .
+
+:App_M02 a :MortgageApplication ;
+    :hasApplicant :Applicant_P02 ; :hasCoapplicant :Coapplicant_C01 ;
+    :requestedAmount 850000.00 ; :requestedTermMonths 360 ;
+    :emittedSignal :Sig_M02_credit, :Sig_M02_emp .
+:Sig_M02_credit a :CreditScoreSignal ;
+    :signalValue 0.90 ; :signalConfidence 0.97 ;
+    :signalTimestamp "2026-05-02T11:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Experian .
+:Sig_M02_emp a :EmploymentStabilitySignal ;
+    :signalValue 1.0 ; :signalConfidence 0.99 ;
+    :signalTimestamp "2026-05-02T11:00:00Z"^^xsd:dateTime .
+
+:App_M03 a :MortgageApplication ;
+    :hasApplicant :Applicant_P03 ;
+    :requestedAmount 320000.00 ; :requestedTermMonths 240 ;
+    :emittedSignal :Sig_M03_credit, :Sig_M03_emp .
+:Sig_M03_credit a :CreditScoreSignal ;
+    :signalValue 0.85 ; :signalConfidence 0.96 ;
+    :signalTimestamp "2026-05-03T09:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_TransUnion .
+:Sig_M03_emp a :EmploymentStabilitySignal ;
+    :signalValue 1.0 ; :signalConfidence 0.97 ;
+    :signalTimestamp "2026-05-03T09:00:00Z"^^xsd:dateTime .
+
+:App_M04 a :MortgageApplication ;
+    :hasApplicant :Applicant_P05 ;
+    :requestedAmount 280000.00 ; :requestedTermMonths 360 ;
+    :emittedSignal :Sig_M04_credit .
+:Sig_M04_credit a :CreditScoreSignal ;
+    :signalValue 0.87 ; :signalConfidence 0.95 ;
+    :signalTimestamp "2026-05-04T14:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Equifax .
+
+:App_M05 a :MortgageApplication ;
+    :hasApplicant :Applicant_P06 ;
+    :requestedAmount 210000.00 ; :requestedTermMonths 360 ;
+    :emittedSignal :Sig_M05_credit, :Sig_M05_emp .
+:Sig_M05_credit a :CreditScoreSignal ;
+    :signalValue 0.82 ; :signalConfidence 0.94 ;
+    :signalTimestamp "2026-05-05T15:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Experian .
+:Sig_M05_emp a :EmploymentStabilitySignal ;
+    :signalValue 1.0 ; :signalConfidence 0.98 ;
+    :signalTimestamp "2026-05-05T15:00:00Z"^^xsd:dateTime .
+
+:App_M06 a :MortgageApplication ;
+    :hasApplicant :Applicant_N01 ;
+    :requestedAmount 240000.00 ; :requestedTermMonths 360 ;
+    :emittedSignal :Sig_M06_credit, :Sig_M06_emp .
+:Sig_M06_credit a :CreditScoreSignal ;
+    :signalValue 0.74 ; :signalConfidence 0.92 ;
+    :signalTimestamp "2026-05-06T10:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Equifax .
+:Sig_M06_emp a :EmploymentStabilitySignal ;
+    :signalValue 0.30 ; :signalConfidence 0.88 ;
+    :signalTimestamp "2026-05-06T10:00:00Z"^^xsd:dateTime .
+
+:App_M07 a :MortgageApplication ;
+    :hasApplicant :Applicant_N02 ; :hasCoapplicant :Coapplicant_C01 ;
+    :requestedAmount 320000.00 ; :requestedTermMonths 360 ;
+    :emittedSignal :Sig_M07_credit, :Sig_M07_emp .
+:Sig_M07_credit a :CreditScoreSignal ;
+    :signalValue 0.76 ; :signalConfidence 0.90 ;
+    :signalTimestamp "2026-05-07T11:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_TransUnion .
+:Sig_M07_emp a :EmploymentStabilitySignal ;
+    :signalValue 0.10 ; :signalConfidence 0.85 ;
+    :signalTimestamp "2026-05-07T11:00:00Z"^^xsd:dateTime .
+
+:App_M08 a :MortgageApplication ;
+    :hasApplicant :Applicant_S01 ;
+    :requestedAmount 180000.00 ; :requestedTermMonths 360 ;
+    :emittedSignal :Sig_M08_credit .
+:Sig_M08_credit a :CreditScoreSignal ;
+    :signalValue 0.51 ; :signalConfidence 0.88 ;
+    :signalTimestamp "2026-05-08T09:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Equifax .
+
+:App_M09 a :MortgageApplication ;
+    :hasApplicant :Applicant_S04 ;
+    :requestedAmount 150000.00 ; :requestedTermMonths 360 ;
+    :emittedSignal :Sig_M09_credit, :Sig_M09_emp .
+:Sig_M09_credit a :CreditScoreSignal ;
+    :signalValue 0.38 ; :signalConfidence 0.92 ;
+    :signalTimestamp "2026-05-09T10:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Experian .
+:Sig_M09_emp a :EmploymentStabilitySignal ;
+    :signalValue 0.20 ; :signalConfidence 0.85 ;
+    :signalTimestamp "2026-05-09T10:00:00Z"^^xsd:dateTime .
+
+:App_M10 a :MortgageApplication ;
+    :hasApplicant :Applicant_N05 ;
+    :requestedAmount 295000.00 ; :requestedTermMonths 360 ;
+    :emittedSignal :Sig_M10_credit, :Sig_M10_emp .
+:Sig_M10_credit a :CreditScoreSignal ;
+    :signalValue 0.80 ; :signalConfidence 0.93 ;
+    :signalTimestamp "2026-05-10T13:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_TransUnion .
+:Sig_M10_emp a :EmploymentStabilitySignal ;
+    :signalValue 0.30 ; :signalConfidence 0.88 ;
+    :signalTimestamp "2026-05-10T13:00:00Z"^^xsd:dateTime .
+
+##############################################################################
+# Auto loan applications (10)
+##############################################################################
+
+:App_A01 a :AutoLoanApplication ;
+    :hasApplicant :Applicant_P04 ;
+    :requestedAmount 45000.00 ; :requestedTermMonths 60 ;
+    :emittedSignal :Sig_A01_credit, :Sig_A01_emp .
+:Sig_A01_credit a :CreditScoreSignal ;
+    :signalValue 0.80 ; :signalConfidence 0.95 ;
+    :signalTimestamp "2026-05-01T12:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Equifax .
+:Sig_A01_emp a :EmploymentStabilitySignal ;
+    :signalValue 0.20 ; :signalConfidence 0.92 ;
+    :signalTimestamp "2026-05-01T12:00:00Z"^^xsd:dateTime .
+
+:App_A02 a :AutoLoanApplication ;
+    :hasApplicant :Applicant_P07 ;
+    :requestedAmount 62000.00 ; :requestedTermMonths 72 ;
+    :emittedSignal :Sig_A02_credit, :Sig_A02_emp .
+:Sig_A02_credit a :CreditScoreSignal ;
+    :signalValue 0.84 ; :signalConfidence 0.94 ;
+    :signalTimestamp "2026-05-02T14:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Experian .
+:Sig_A02_emp a :EmploymentStabilitySignal ;
+    :signalValue 0.50 ; :signalConfidence 0.90 ;
+    :signalTimestamp "2026-05-02T14:00:00Z"^^xsd:dateTime .
+
+:App_A03 a :AutoLoanApplication ;
+    :hasApplicant :Applicant_N03 ;
+    :requestedAmount 38000.00 ; :requestedTermMonths 60 ;
+    :emittedSignal :Sig_A03_credit, :Sig_A03_emp .
+:Sig_A03_credit a :CreditScoreSignal ;
+    :signalValue 0.71 ; :signalConfidence 0.90 ;
+    :signalTimestamp "2026-05-03T09:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_TransUnion .
+:Sig_A03_emp a :EmploymentStabilitySignal ;
+    :signalValue 0.40 ; :signalConfidence 0.85 ;
+    :signalTimestamp "2026-05-03T09:00:00Z"^^xsd:dateTime .
+
+:App_A04 a :AutoLoanApplication ;
+    :hasApplicant :Applicant_N04 ;
+    :requestedAmount 28000.00 ; :requestedTermMonths 60 ;
+    :emittedSignal :Sig_A04_credit .
+:Sig_A04_credit a :CreditScoreSignal ;
+    :signalValue 0.58 ; :signalConfidence 0.88 ;
+    :signalTimestamp "2026-05-04T11:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Equifax .
+
+:App_A05 a :AutoLoanApplication ;
+    :hasApplicant :Applicant_N06 ;
+    :requestedAmount 32000.00 ; :requestedTermMonths 60 ;
+    :emittedSignal :Sig_A05_credit, :Sig_A05_emp .
+:Sig_A05_credit a :CreditScoreSignal ;
+    :signalValue 0.67 ; :signalConfidence 0.91 ;
+    :signalTimestamp "2026-05-05T10:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Experian .
+:Sig_A05_emp a :EmploymentStabilitySignal ;
+    :signalValue 0.50 ; :signalConfidence 0.88 ;
+    :signalTimestamp "2026-05-05T10:00:00Z"^^xsd:dateTime .
+
+:App_A06 a :AutoLoanApplication ;
+    :hasApplicant :Applicant_S02 ;
+    :requestedAmount 22000.00 ; :requestedTermMonths 60 ;
+    :emittedSignal :Sig_A06_credit .
+:Sig_A06_credit a :CreditScoreSignal ;
+    :signalValue 0.58 ; :signalConfidence 0.86 ;
+    :signalTimestamp "2026-05-06T13:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_TransUnion .
+
+:App_A07 a :AutoLoanApplication ;
+    :hasApplicant :Applicant_S03 ;
+    :requestedAmount 18000.00 ; :requestedTermMonths 60 ;
+    :emittedSignal :Sig_A07_credit .
+:Sig_A07_credit a :CreditScoreSignal ;
+    :signalValue 0.46 ; :signalConfidence 0.85 ;
+    :signalTimestamp "2026-05-07T14:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Equifax .
+
+:App_A08 a :AutoLoanApplication ;
+    :hasApplicant :Applicant_S05 ;
+    :requestedAmount 25000.00 ; :requestedTermMonths 60 ;
+    :emittedSignal :Sig_A08_credit, :Sig_A08_emp .
+:Sig_A08_credit a :CreditScoreSignal ;
+    :signalValue 0.55 ; :signalConfidence 0.87 ;
+    :signalTimestamp "2026-05-08T11:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Experian .
+:Sig_A08_emp a :EmploymentStabilitySignal ;
+    :signalValue 0.40 ; :signalConfidence 0.85 ;
+    :signalTimestamp "2026-05-08T11:00:00Z"^^xsd:dateTime .
+
+:App_A09 a :AutoLoanApplication ;
+    :hasApplicant :Applicant_N07 ;
+    :requestedAmount 34000.00 ; :requestedTermMonths 60 ;
+    :emittedSignal :Sig_A09_credit, :Sig_A09_emp .
+:Sig_A09_credit a :CreditScoreSignal ;
+    :signalValue 0.72 ; :signalConfidence 0.92 ;
+    :signalTimestamp "2026-05-09T15:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_TransUnion .
+:Sig_A09_emp a :EmploymentStabilitySignal ;
+    :signalValue 0.40 ; :signalConfidence 0.88 ;
+    :signalTimestamp "2026-05-09T15:00:00Z"^^xsd:dateTime .
+
+:App_A10 a :AutoLoanApplication ;
+    :hasApplicant :Applicant_S06 ;
+    :requestedAmount 19000.00 ; :requestedTermMonths 60 ;
+    :emittedSignal :Sig_A10_credit, :Sig_A10_emp .
+:Sig_A10_credit a :CreditScoreSignal ;
+    :signalValue 0.45 ; :signalConfidence 0.89 ;
+    :signalTimestamp "2026-05-10T10:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Equifax .
+:Sig_A10_emp a :EmploymentStabilitySignal ;
+    :signalValue 0.60 ; :signalConfidence 0.91 ;
+    :signalTimestamp "2026-05-10T10:00:00Z"^^xsd:dateTime .
+
+##############################################################################
+# Personal loan applications (10)
+##############################################################################
+
+:App_L01 a :PersonalLoanApplication ;
+    :hasApplicant :Applicant_P01 ;
+    :requestedAmount 50000.00 ; :requestedTermMonths 48 ;
+    :emittedSignal :Sig_L01_credit, :Sig_L01_emp .
+:Sig_L01_credit a :CreditScoreSignal ;
+    :signalValue 0.93 ; :signalConfidence 0.98 ;
+    :signalTimestamp "2026-05-11T09:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Equifax .
+:Sig_L01_emp a :EmploymentStabilitySignal ;
+    :signalValue 0.90 ; :signalConfidence 0.95 ;
+    :signalTimestamp "2026-05-11T09:00:00Z"^^xsd:dateTime .
+
+:App_L02 a :PersonalLoanApplication ;
+    :hasApplicant :Applicant_P02 ;
+    :requestedAmount 75000.00 ; :requestedTermMonths 60 ;
+    :emittedSignal :Sig_L02_credit, :Sig_L02_emp .
+:Sig_L02_credit a :CreditScoreSignal ;
+    :signalValue 0.90 ; :signalConfidence 0.96 ;
+    :signalTimestamp "2026-05-11T11:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Experian .
+:Sig_L02_emp a :EmploymentStabilitySignal ;
+    :signalValue 1.0 ; :signalConfidence 0.98 ;
+    :signalTimestamp "2026-05-11T11:00:00Z"^^xsd:dateTime .
+
+:App_L03 a :PersonalLoanApplication ;
+    :hasApplicant :Applicant_P03 ;
+    :requestedAmount 30000.00 ; :requestedTermMonths 36 ;
+    :emittedSignal :Sig_L03_credit, :Sig_L03_emp .
+:Sig_L03_credit a :CreditScoreSignal ;
+    :signalValue 0.85 ; :signalConfidence 0.96 ;
+    :signalTimestamp "2026-05-12T10:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_TransUnion .
+:Sig_L03_emp a :EmploymentStabilitySignal ;
+    :signalValue 1.0 ; :signalConfidence 0.97 ;
+    :signalTimestamp "2026-05-12T10:00:00Z"^^xsd:dateTime .
+
+:App_L04 a :PersonalLoanApplication ;
+    :hasApplicant :Applicant_P05 ;
+    :requestedAmount 80000.00 ; :requestedTermMonths 60 ;
+    :emittedSignal :Sig_L04_credit, :Sig_L04_emp .
+:Sig_L04_credit a :CreditScoreSignal ;
+    :signalValue 0.87 ; :signalConfidence 0.95 ;
+    :signalTimestamp "2026-05-12T14:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Equifax .
+:Sig_L04_emp a :EmploymentStabilitySignal ;
+    :signalValue 0.60 ; :signalConfidence 0.92 ;
+    :signalTimestamp "2026-05-12T14:00:00Z"^^xsd:dateTime .
+
+:App_L05 a :PersonalLoanApplication ;
+    :hasApplicant :Applicant_P06 ;
+    :requestedAmount 95000.00 ; :requestedTermMonths 60 ;
+    :emittedSignal :Sig_L05_credit, :Sig_L05_emp .
+:Sig_L05_credit a :CreditScoreSignal ;
+    :signalValue 0.82 ; :signalConfidence 0.94 ;
+    :signalTimestamp "2026-05-13T09:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Experian .
+:Sig_L05_emp a :EmploymentStabilitySignal ;
+    :signalValue 1.0 ; :signalConfidence 0.98 ;
+    :signalTimestamp "2026-05-13T09:00:00Z"^^xsd:dateTime .
+
+:App_L06 a :PersonalLoanApplication ;
+    :hasApplicant :Applicant_N01 ;
+    :requestedAmount 22000.00 ; :requestedTermMonths 36 ;
+    :emittedSignal :Sig_L06_credit .
+:Sig_L06_credit a :CreditScoreSignal ;
+    :signalValue 0.74 ; :signalConfidence 0.91 ;
+    :signalTimestamp "2026-05-13T13:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_TransUnion .
+
+:App_L07 a :PersonalLoanApplication ;
+    :hasApplicant :Applicant_N02 ;
+    :requestedAmount 18000.00 ; :requestedTermMonths 36 ;
+    :emittedSignal :Sig_L07_credit, :Sig_L07_emp .
+:Sig_L07_credit a :CreditScoreSignal ;
+    :signalValue 0.76 ; :signalConfidence 0.90 ;
+    :signalTimestamp "2026-05-14T10:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Equifax .
+:Sig_L07_emp a :EmploymentStabilitySignal ;
+    :signalValue 0.10 ; :signalConfidence 0.85 ;
+    :signalTimestamp "2026-05-14T10:00:00Z"^^xsd:dateTime .
+
+:App_L08 a :PersonalLoanApplication ;
+    :hasApplicant :Applicant_N03 ;
+    :requestedAmount 15000.00 ; :requestedTermMonths 36 ;
+    :emittedSignal :Sig_L08_credit .
+:Sig_L08_credit a :CreditScoreSignal ;
+    :signalValue 0.71 ; :signalConfidence 0.89 ;
+    :signalTimestamp "2026-05-14T15:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Experian .
+
+:App_L09 a :PersonalLoanApplication ;
+    :hasApplicant :Applicant_S01 ;
+    :requestedAmount 8000.00 ; :requestedTermMonths 24 ;
+    :emittedSignal :Sig_L09_credit, :Sig_L09_emp .
+:Sig_L09_credit a :CreditScoreSignal ;
+    :signalValue 0.51 ; :signalConfidence 0.88 ;
+    :signalTimestamp "2026-05-15T09:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_TransUnion .
+:Sig_L09_emp a :EmploymentStabilitySignal ;
+    :signalValue 0.10 ; :signalConfidence 0.85 ;
+    :signalTimestamp "2026-05-15T09:00:00Z"^^xsd:dateTime .
+
+:App_L10 a :PersonalLoanApplication ;
+    :hasApplicant :Applicant_S03 ;
+    :requestedAmount 5000.00 ; :requestedTermMonths 24 ;
+    :emittedSignal :Sig_L10_credit .
+:Sig_L10_credit a :CreditScoreSignal ;
+    :signalValue 0.46 ; :signalConfidence 0.85 ;
+    :signalTimestamp "2026-05-15T13:00:00Z"^^xsd:dateTime ;
+    :reportedBy :Bureau_Equifax .

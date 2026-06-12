@@ -1,0 +1,375 @@
+## credit_risk.ttl — T-Box (the cognitive core)
+##
+## Per SPEC §4. Base IRI: https://nikko.dev/ontology/credit#
+## No DNS resolution needed; this is purely an identifier.
+##
+## Design notes:
+##   1. Prime/NearPrime/Subprime applicant tiers are defined as OWL 2 DL
+##      equivalent classes using `owl:withRestrictions`. Jena's built-in OWL RL
+##      reasoner will NOT fire these — use Pellet via owlready2 (see SPEC §4.5).
+##   2. The three risk tier classes (Low/Medium/HighRiskApplication) are punned:
+##      they are both `owl:Class` (for membership) AND `owl:NamedIndividual`
+##      (so `:hasRiskTier app :LowRiskApplication` works in SWRL R1 per §6).
+##      OWL 2 DL allows this; Pellet handles it correctly.
+
+@prefix :     <https://nikko.dev/ontology/credit#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+
+<https://nikko.dev/ontology/credit>
+    a owl:Ontology ;
+    rdfs:label "Credit Risk Knowledge Graph"@en ;
+    rdfs:comment "Teaching ontology for OWL/SHACL/SPARQL/SWRL via a credit-risk signal-fusion use case."@en ;
+    owl:versionInfo "0.1.0" .
+
+##############################################################################
+# 1. Classes — Legal Entities
+##############################################################################
+
+:LegalEntity a owl:Class ;
+    rdfs:label "Legal Entity"@en ;
+    rdfs:comment "Any entity with legal personhood: natural persons or organizations."@en .
+
+:Person a owl:Class ;
+    rdfs:subClassOf :LegalEntity ;
+    rdfs:label "Person"@en .
+
+:Organization a owl:Class ;
+    rdfs:subClassOf :LegalEntity ;
+    rdfs:label "Organization"@en .
+
+# Person and Organization are disjoint (a person is not an org)
+:Person owl:disjointWith :Organization .
+
+:Applicant a owl:Class ;
+    rdfs:subClassOf :Person ;
+    rdfs:label "Applicant"@en ;
+    rdfs:comment "A person applying for a credit product."@en .
+
+:Coapplicant a owl:Class ;
+    rdfs:subClassOf :Person ;
+    rdfs:label "Coapplicant"@en .
+
+:Employer a owl:Class ;
+    rdfs:subClassOf :Organization ;
+    rdfs:label "Employer"@en .
+
+:CreditBureau a owl:Class ;
+    rdfs:subClassOf :Organization ;
+    rdfs:label "Credit Bureau"@en .
+
+##############################################################################
+# 2. Classes — Applicant tiers (OWL 2 DL equivalent classes)
+#
+# These are the "killer demo" of OWL reasoning: assert raw FICO/DTI/employment
+# and the reasoner derives tier membership without imperative code.
+# Requires Pellet — Jena RL will NOT fire these (datatype facets are not in
+# the OWL 2 RL profile).
+##############################################################################
+
+:PrimeApplicant a owl:Class ;
+    rdfs:subClassOf :Applicant ;
+    rdfs:label "Prime Applicant"@en ;
+    # Equivalence: FICO >= 740 AND DTI <= 0.36 AND employment >= 2 years
+    owl:equivalentClass [
+        a owl:Class ;
+        owl:intersectionOf (
+            :Applicant
+            [ a owl:Restriction ;
+              owl:onProperty :hasCreditScore ;
+              owl:someValuesFrom [
+                  a rdfs:Datatype ;
+                  owl:onDatatype xsd:integer ;
+                  owl:withRestrictions ( [ xsd:minInclusive 740 ] )
+              ]
+            ]
+            [ a owl:Restriction ;
+              owl:onProperty :hasDebtToIncomeRatio ;
+              owl:someValuesFrom [
+                  a rdfs:Datatype ;
+                  owl:onDatatype xsd:decimal ;
+                  owl:withRestrictions ( [ xsd:maxInclusive 0.36 ] )
+              ]
+            ]
+            [ a owl:Restriction ;
+              owl:onProperty :hasEmploymentYears ;
+              owl:someValuesFrom [
+                  a rdfs:Datatype ;
+                  owl:onDatatype xsd:integer ;
+                  owl:withRestrictions ( [ xsd:minInclusive 2 ] )
+              ]
+            ]
+        )
+    ] .
+
+:SubprimeApplicant a owl:Class ;
+    rdfs:subClassOf :Applicant ;
+    rdfs:label "Subprime Applicant"@en ;
+    # Equivalence: FICO < 620
+    owl:equivalentClass [
+        a owl:Class ;
+        owl:intersectionOf (
+            :Applicant
+            [ a owl:Restriction ;
+              owl:onProperty :hasCreditScore ;
+              owl:someValuesFrom [
+                  a rdfs:Datatype ;
+                  owl:onDatatype xsd:integer ;
+                  owl:withRestrictions ( [ xsd:maxExclusive 620 ] )
+              ]
+            ]
+        )
+    ] .
+
+:NearPrimeApplicant a owl:Class ;
+    rdfs:subClassOf :Applicant ;
+    rdfs:label "Near-Prime Applicant"@en ;
+    # Equivalence: 620 <= FICO < 740
+    # Pedagogical note: expressing a [a, b) range in OWL requires two
+    # restrictions in an intersection; SHACL uses sh:minInclusive +
+    # sh:maxExclusive, which is more concise. That contrast is a key
+    # teaching point in NB02/NB03 (SPEC §4.5).
+    owl:equivalentClass [
+        a owl:Class ;
+        owl:intersectionOf (
+            :Applicant
+            [ a owl:Restriction ;
+              owl:onProperty :hasCreditScore ;
+              owl:someValuesFrom [
+                  a rdfs:Datatype ;
+                  owl:onDatatype xsd:integer ;
+                  owl:withRestrictions ( [ xsd:minInclusive 620 ] )
+              ]
+            ]
+            [ a owl:Restriction ;
+              owl:onProperty :hasCreditScore ;
+              owl:someValuesFrom [
+                  a rdfs:Datatype ;
+                  owl:onDatatype xsd:integer ;
+                  owl:withRestrictions ( [ xsd:maxExclusive 740 ] )
+              ]
+            ]
+        )
+    ] .
+
+# Pairwise disjointness — an applicant cannot occupy two tiers simultaneously.
+[ a owl:AllDisjointClasses ;
+  owl:members ( :PrimeApplicant :NearPrimeApplicant :SubprimeApplicant ) ] .
+
+##############################################################################
+# 3. Classes — Credit Applications
+##############################################################################
+
+:CreditApplication a owl:Class ;
+    rdfs:label "Credit Application"@en .
+
+:MortgageApplication a owl:Class ;
+    rdfs:subClassOf :CreditApplication ;
+    rdfs:label "Mortgage Application"@en .
+
+:PersonalLoanApplication a owl:Class ;
+    rdfs:subClassOf :CreditApplication ;
+    rdfs:label "Personal Loan Application"@en .
+
+:AutoLoanApplication a owl:Class ;
+    rdfs:subClassOf :CreditApplication ;
+    rdfs:label "Auto Loan Application"@en .
+
+# Risk tier classes — PUNNED (both class and individual). See header note.
+:LowRiskApplication a owl:Class, owl:NamedIndividual ;
+    rdfs:subClassOf :CreditApplication ;
+    rdfs:label "Low-Risk Application"@en .
+
+:MediumRiskApplication a owl:Class, owl:NamedIndividual ;
+    rdfs:subClassOf :CreditApplication ;
+    rdfs:label "Medium-Risk Application"@en .
+
+:HighRiskApplication a owl:Class, owl:NamedIndividual ;
+    rdfs:subClassOf :CreditApplication ;
+    rdfs:label "High-Risk Application"@en .
+
+[ a owl:AllDisjointClasses ;
+  owl:members ( :LowRiskApplication :MediumRiskApplication :HighRiskApplication ) ] .
+
+##############################################################################
+# 4. Classes — Risk Signals (the signal-fusion layer)
+#
+# Per SPEC §6: SWRL rules consume signals, not raw datatype properties on the
+# applicant. Each application emits one or more signals via :emittedSignal.
+##############################################################################
+
+:RiskSignal a owl:Class ;
+    rdfs:label "Risk Signal"@en ;
+    rdfs:comment "Normalized 0-1 evidence emitted at application time. Fused by SWRL into risk tiers."@en .
+
+:CreditScoreSignal a owl:Class ;
+    rdfs:subClassOf :RiskSignal ;
+    rdfs:label "Credit Score Signal"@en .
+
+:IncomeSignal a owl:Class ;
+    rdfs:subClassOf :RiskSignal ;
+    rdfs:label "Income Signal"@en .
+
+:DebtRatioSignal a owl:Class ;
+    rdfs:subClassOf :RiskSignal ;
+    rdfs:label "Debt-Ratio Signal"@en .
+
+:EmploymentStabilitySignal a owl:Class ;
+    rdfs:subClassOf :RiskSignal ;
+    rdfs:label "Employment Stability Signal"@en .
+
+:BehavioralSignal a owl:Class ;
+    rdfs:subClassOf :RiskSignal ;
+    rdfs:label "Behavioral Signal"@en .
+
+:CollateralSignal a owl:Class ;
+    rdfs:subClassOf :RiskSignal ;
+    rdfs:label "Collateral Signal"@en .
+
+##############################################################################
+# 5. Classes — Decisions and Explanations
+##############################################################################
+
+:Decision a owl:Class ;
+    rdfs:label "Decision"@en .
+
+:Approve a owl:NamedIndividual, :Decision ;
+    rdfs:label "Approve"@en .
+
+:Review a owl:NamedIndividual, :Decision ;
+    rdfs:label "Review"@en .
+
+:Decline a owl:NamedIndividual, :Decision ;
+    rdfs:label "Decline"@en .
+
+[ a owl:AllDifferent ;
+  owl:distinctMembers ( :Approve :Review :Decline ) ] .
+
+:Explanation a owl:Class ;
+    rdfs:label "Explanation"@en ;
+    rdfs:comment "Reified proof node, populated post-hoc from Pellet's explain_inference API. See SPEC §4.7."@en .
+
+##############################################################################
+# 6. Object Properties
+##############################################################################
+
+:hasApplicant a owl:ObjectProperty, owl:FunctionalProperty ;
+    rdfs:domain :CreditApplication ;
+    rdfs:range :Applicant ;
+    rdfs:label "has applicant"@en .
+
+:hasCoapplicant a owl:ObjectProperty ;
+    rdfs:domain :CreditApplication ;
+    rdfs:range :Coapplicant ;
+    rdfs:label "has coapplicant"@en .
+
+:emittedSignal a owl:ObjectProperty ;
+    rdfs:domain :CreditApplication ;
+    rdfs:range :RiskSignal ;
+    rdfs:label "emitted signal"@en .
+
+:employedBy a owl:ObjectProperty ;
+    rdfs:domain :Person ;
+    rdfs:range :Employer ;
+    rdfs:label "employed by"@en .
+
+:reportedBy a owl:ObjectProperty ;
+    rdfs:domain :CreditScoreSignal ;
+    rdfs:range :CreditBureau ;
+    rdfs:label "reported by"@en .
+
+:hasDecision a owl:ObjectProperty, owl:FunctionalProperty ;
+    rdfs:domain :CreditApplication ;
+    rdfs:range :Decision ;
+    rdfs:label "has decision"@en .
+
+# Range = enumeration of the 3 punned risk tier individuals.
+:hasRiskTier a owl:ObjectProperty, owl:FunctionalProperty ;
+    rdfs:domain :CreditApplication ;
+    rdfs:range [ a owl:Class ;
+                 owl:oneOf ( :LowRiskApplication :MediumRiskApplication :HighRiskApplication ) ] ;
+    rdfs:label "has risk tier"@en .
+
+:hasExplanation a owl:ObjectProperty, owl:FunctionalProperty ;
+    rdfs:domain :Decision ;
+    rdfs:range :Explanation ;
+    rdfs:label "has explanation"@en .
+
+:derivedFromRule a owl:ObjectProperty, owl:TransitiveProperty ;
+    rdfs:domain :Explanation ;
+    rdfs:range :Explanation ;
+    rdfs:label "derived from rule"@en .
+
+##############################################################################
+# 7. Datatype Properties — Applicant attributes
+##############################################################################
+
+:hasCreditScore a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :Applicant ;
+    rdfs:range xsd:integer ;
+    rdfs:label "credit score"@en ;
+    rdfs:comment "FICO range 300-850."@en .
+
+:hasAnnualIncome a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :Applicant ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "annual income"@en ;
+    rdfs:comment "USD"@en .
+
+:hasDebtToIncomeRatio a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :Applicant ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "debt-to-income ratio"@en .
+
+:hasEmploymentYears a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :Applicant ;
+    rdfs:range xsd:integer ;
+    rdfs:label "employment years"@en .
+
+:hasMonthsAtAddress a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :Applicant ;
+    rdfs:range xsd:integer ;
+    rdfs:label "months at address"@en .
+
+:hasPriorDelinquencies a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :Applicant ;
+    rdfs:range xsd:integer ;
+    rdfs:label "prior delinquencies"@en .
+
+##############################################################################
+# 8. Datatype Properties — Application attributes
+##############################################################################
+
+:requestedAmount a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :CreditApplication ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "requested amount"@en .
+
+:requestedTermMonths a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :CreditApplication ;
+    rdfs:range xsd:integer ;
+    rdfs:label "requested term (months)"@en .
+
+##############################################################################
+# 9. Datatype Properties — Signal attributes
+##############################################################################
+
+:signalValue a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :RiskSignal ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "signal value"@en ;
+    rdfs:comment "Normalized to [0, 1]. Higher = stronger evidence for low risk."@en .
+
+:signalConfidence a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :RiskSignal ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "signal confidence"@en .
+
+:signalTimestamp a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :RiskSignal ;
+    rdfs:range xsd:dateTime ;
+    rdfs:label "signal timestamp"@en ;
+    rdfs:comment "Used for staleness checks (SHACL §5)."@en .

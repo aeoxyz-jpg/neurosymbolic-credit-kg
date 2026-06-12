@@ -1,0 +1,161 @@
+## shapes.ttl — SHACL constraints (SPEC §5)
+##
+## Each shape covers one of the 8 shape categories listed in SPEC §5:
+##   1. Node shape with required properties
+##   2. Property shape with cardinality
+##   3. Property shape with value range
+##   4. Property-path shape
+##   5. sh:or (disjunction)
+##   6. sh:not (negation)
+##   7. SPARQL-based custom constraint (signal staleness)
+##   8. Closed shape (no unknown properties)
+##
+## Every shape has an English sh:message so NB03 can demonstrate readable
+## violation reports.
+
+@prefix :     <https://nikko.dev/ontology/credit#> .
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+##############################################################################
+# 1. Node shape — every CreditApplication MUST have applicant + amount + term
+##############################################################################
+
+:CreditApplicationShape a sh:NodeShape ;
+    sh:targetClass :CreditApplication ;
+    sh:property [
+        sh:path :hasApplicant ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "Application must have exactly one applicant"@en ;
+    ] ;
+    sh:property [
+        sh:path :requestedAmount ;
+        sh:minCount 1 ;
+        sh:datatype xsd:decimal ;
+        sh:minExclusive 0 ;
+        sh:message "Requested amount must be > 0"@en ;
+    ] ;
+    sh:property [
+        sh:path :requestedTermMonths ;
+        sh:minCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 1 ;
+        sh:message "Term must be ≥ 1 month"@en ;
+    ] .
+
+##############################################################################
+# 2. Property shape — :hasDecision is functional (cardinality exactly 1 when present)
+##############################################################################
+
+:DecisionCardinalityShape a sh:NodeShape ;
+    sh:targetClass :CreditApplication ;
+    sh:property [
+        sh:path :hasDecision ;
+        sh:maxCount 1 ;
+        sh:message "An application cannot have multiple decisions"@en ;
+    ] .
+
+##############################################################################
+# 3. Property shape — credit score range [300, 850] (FICO)
+##############################################################################
+
+:CreditScoreRangeShape a sh:NodeShape ;
+    sh:targetClass :Applicant ;
+    sh:property [
+        sh:path :hasCreditScore ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 300 ; sh:maxInclusive 850 ;
+        sh:message "FICO must be in [300, 850]"@en ;
+    ] .
+
+##############################################################################
+# 4. Property path shape — every application's applicant must have a FICO
+##############################################################################
+
+:ApplicantFicoReachableShape a sh:NodeShape ;
+    sh:targetClass :CreditApplication ;
+    sh:property [
+        sh:path ( :hasApplicant :hasCreditScore ) ;       # property path
+        sh:minCount 1 ;
+        sh:message "Application's applicant must have a credit score"@en ;
+    ] .
+
+##############################################################################
+# 5. sh:or — application must emit either a CreditScore signal OR a Collateral
+#    signal (one or the other is the minimal evidence for any decision)
+##############################################################################
+
+:ApplicationEvidenceShape a sh:NodeShape ;
+    sh:targetClass :CreditApplication ;
+    sh:or (
+        [ sh:property [ sh:path :emittedSignal ;
+                        sh:qualifiedValueShape [ sh:class :CreditScoreSignal ] ;
+                        sh:qualifiedMinCount 1 ] ]
+        [ sh:property [ sh:path :emittedSignal ;
+                        sh:qualifiedValueShape [ sh:class :CollateralSignal ] ;
+                        sh:qualifiedMinCount 1 ] ]
+    ) ;
+    sh:message "Application must emit at least one CreditScoreSignal OR CollateralSignal"@en .
+
+##############################################################################
+# 6. sh:not — an applicant cannot be both Prime AND Subprime
+#    (enforces the disjointness already declared in OWL, with a friendlier message)
+##############################################################################
+
+:ApplicantTierDisjointnessShape a sh:NodeShape ;
+    sh:targetClass :Applicant ;
+    sh:not [
+        sh:and (
+            [ sh:class :PrimeApplicant ]
+            [ sh:class :SubprimeApplicant ]
+        )
+    ] ;
+    sh:message "An applicant cannot be classified as both Prime and Subprime"@en .
+
+##############################################################################
+# 7. SPARQL-based custom constraint — signal staleness (timestamp ≤ 90 days)
+##############################################################################
+
+:SignalFreshnessShape a sh:NodeShape ;
+    sh:targetClass :RiskSignal ;
+    sh:sparql [
+        sh:message "Signal is older than 90 days — refresh before use"@en ;
+        sh:prefixes :OntologyPrefixes ;
+        sh:select """
+            SELECT $this ?value WHERE {
+                $this :signalTimestamp ?value .
+                FILTER (?value < (NOW() - "P90D"^^xsd:duration))
+            }
+        """ ;
+    ] .
+
+# Required by sh:sparql — declare prefixes used in the SELECT
+:OntologyPrefixes
+    sh:declare [
+        sh:prefix "" ;
+        sh:namespace "https://nikko.dev/ontology/credit#"^^xsd:anyURI ;
+    ] ,
+    [
+        sh:prefix "xsd" ;
+        sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ;
+    ] .
+
+##############################################################################
+# 8. Closed shape — applicants cannot have unknown properties beyond the
+#    declared T-Box vocabulary
+##############################################################################
+
+:ApplicantClosedShape a sh:NodeShape ;
+    sh:targetClass :Applicant ;
+    sh:closed true ;
+    sh:ignoredProperties (
+        rdf:type rdfs:label rdfs:comment
+        owl:sameAs owl:differentFrom
+        :hasCreditScore :hasAnnualIncome :hasDebtToIncomeRatio
+        :hasEmploymentYears :hasMonthsAtAddress :hasPriorDelinquencies
+        :employedBy
+    ) ;
+    sh:message "Applicant has a property not in the declared schema (closed shape)"@en .

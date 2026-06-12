@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.uv/
+.pytest_cache/
+.ruff_cache/
+
+# Notebooks
+.ipynb_checkpoints/
+notebooks/**/*.ipynb_checkpoints/
+
+# Fuseki persistent data (mounted into container)
+fuseki_data/
+
+# Secrets
+.env
+.env.local
+
+# Derived ontology files
+ontology/inferred.ttl
+ontology/*.materialized.ttl
+
+# macOS
+.DS_Store
+
+# Private — local-only, never published (AI working notes, private reference PDFs)
+/CLAUDE.md
+private/
+SPEC.md
+docs/superpowers/

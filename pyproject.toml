@@ -1,0 +1,44 @@
+[project]
+name = "credit-risk-kg"
+version = "0.1.0"
+description = "Neurosymbolic credit-risk knowledge graph — an end-to-end W3C semantic reasoning stack (OWL/SHACL/SPARQL/SWRL) with an LLM-in-the-loop."
+license = "Apache-2.0"
+requires-python = ">=3.11"
+readme = "README.md"
+
+dependencies = [
+    # Phase A: ontology + Fuseki I/O
+    "rdflib>=7.0",
+    "httpx>=0.27",
+    "python-dotenv>=1.0",
+    # Phase B/C: OWL reasoning + SHACL
+    "owlready2>=0.46",
+    "pyshacl>=0.30",
+    # Notebook runtime (used from Phase B onward)
+    "jupyterlab>=4.0",
+    "ipykernel>=6.29",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.6",
+    "pytest>=8.0",
+]
+
+[tool.setuptools]
+packages = []
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# Notebook builders embed long prose strings and md/code cell lambdas.
+"scripts/_build_nb*.py" = ["E501", "E731"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
