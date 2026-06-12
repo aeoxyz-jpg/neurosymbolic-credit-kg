@@ -14,9 +14,8 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install
-        run: |
-          uv venv
-          uv pip install -e ".[dev]"
+        # setup-uv with python-version already provisions .venv — install into it
+        run: uv pip install -e ".[dev]"
       - name: Ruff
         run: |
           uv run ruff format --check scripts/ tests/
@@ -32,9 +31,8 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install
-        run: |
-          uv venv
-          uv pip install -e ".[dev]"
+        # setup-uv with python-version already provisions .venv — install into it
+        run: uv pip install -e ".[dev]"
       - name: Start Fuseki (in-memory dataset for CI)
         run: |
           docker run -d --name fuseki -p 3030:3030 \
