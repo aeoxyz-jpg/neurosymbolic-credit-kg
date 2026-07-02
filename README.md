@@ -52,7 +52,7 @@ The dataset models 20 applicants (plus co-applicants) and 30 loan applications â
 
 ## Design highlights
 
-These are the decisions worth discussing in an interview; each links into [docs/architecture.md](docs/architecture.md) for the full reasoning.
+These are the decisions worth discussing; each links into [docs/architecture.md](docs/architecture.md) for the full reasoning.
 
 **OWL 2 DL datatype facets, deliberately outside the RL profile.** The `:PrimeApplicant`-style tier classes are defined as equivalent classes using datatype facets (`xsd:withRestrictions`), which places them in OWL 2 DL rather than the lighter RL profile. This is not an accident: NB02 runs the identical A-Box through both reasoners side by side. Jena RL classifies 0 applicants; Pellet DL classifies 22. The contrast makes the abstract "choose your profile" advice tangible â€” profile choice changes what your system can actually conclude.
 
